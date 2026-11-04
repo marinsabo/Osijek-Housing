@@ -1,0 +1,25 @@
+# Who is asked to review a change. The last matching line wins.
+
+# Shared files: Marin
+/docker-compose.yml    @marinsabo
+/Dockerfile            @marinsabo
+/pyproject.toml        @marinsabo
+/.env.example          @marinsabo
+/app/main.py           @marinsabo
+/.github/              @marinsabo
+
+# Core: Marin
+/app/core/             @marinsabo
+/tests/core/           @marinsabo
+
+# Web pages: Polić
+/app/web/              @policluka
+/tests/web/            @policluka
+
+# Alerts: Bob
+/app/alerts/           @baranjekk
+/tests/alerts/         @baranjekk
+
+# Fair-rent estimate: Sigi
+/app/pricing/          @Destmod
+/tests/pricing/        @Destmod
