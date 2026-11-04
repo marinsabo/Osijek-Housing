@@ -1,0 +1,1 @@
+"""Osijek Housing web app."""
