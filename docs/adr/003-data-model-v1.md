@@ -33,7 +33,11 @@ We will use the model in [`docs/data-model.dbml`](../data-model.dbml). Its main 
 - price: euros per month, TODO: utilities included or not
 - rooms: a whole number
 - distance: kilometres from one chosen faculty
-- TODO: neighbourhood as a filter, yes or no
+- neighbourhood: zero or more neighbourhoods from the `neighbourhood` table, by id. None selected means any neighbourhood.
+
+A listing matches when it passes every filter that is set. Saved searches store their neighbourhoods in a join table, `saved_search_neighbourhood`, so every id is checked by a foreign key.
+
+A flat's neighbourhood is chosen by the landlord from the `neighbourhood` list, not worked out from the map pin. The final list comes from Sigi. Until it arrives, the list from Marin's own research is used.
 
 **Review verification.** When a student submits a review, they get an automated email asking for proof that they lived in the flat: a rental contract, a residence registration or a utility bill. The student replies with the proof, a moderator checks it and records `verified_at` and `verified_by`, and the email is then deleted because it contains personal data. Unverified reviews are shown with an "unverified" label and ranked below verified ones. The proof comes from the student, not the landlord, so a landlord can't block bad reviews and never learns who wrote one.
 
@@ -65,4 +69,4 @@ The model was written without the teammates' inputs, so it will probably change 
 
 The DBML file describes v1. Once Alembic migrations exist, the models in `app/core/` and the migrations are the source of truth, and the DBML file is not kept up to date.
 
-We will revisit this model when booking is added, since a record of who rented which flat could replace emailed proof, when listings can be reported, or when roommate matching needs student preferences.
+We will revisit this model when booking is added, since a record of who rented which flat could replace emailed proof, when listings can be reported, or when roommate matching needs student preferences. If landlords' chosen neighbourhoods often don't match their map pins, we will store neighbourhood boundaries and work out the neighbourhood from the pin instead.
