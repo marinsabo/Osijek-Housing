@@ -22,7 +22,7 @@ We will use the model in [`docs/data-model.dbml`](../data-model.dbml). Its main 
 
 **Users and roles.** Every person has one row in `users`. Students and landlords also have a row in `student` or `landlord`, holding the data only that role needs: a student's faculty, a landlord's phone number and verification. Moderators are users with `is_moderator` set. A single `users` table with a role column was the alternative, but it would need columns that are empty for every other role.
 
-**Flats and listings.** A flat is the physical place, and a listing is one offer to rent it at a price. Prices and descriptions change from year to year, but the flat stays the same, so when a flat is rented again the landlord creates a new listing for the same flat. One table for both would copy the flat's details into every new offer and lose the link between them.
+**Flats and listings.** A flat is the physical place, and a listing is one offer to rent it at a price. Prices and descriptions change from year to year, but the flat stays the same, so when a flat is rented again the landlord creates a new listing for the same flat. One table for both would copy the flat's details into every new offer and lose the link between them. A listing is open while both `taken_at` and `archived_at` are empty: `taken_at` means the flat was rented through it, and `archived_at` means the landlord withdrew it. Keeping the two apart means a withdrawn offer is never counted as a real rental price.
 
 **Reviews belong to flats.** A listing is taken, replaced or deleted after a season, and reviews attached to it would disappear with it. A landlord could then get rid of a bad review simply by publishing a new listing. Reviews stay with the flat and describe it as it was when they were written. A student may review a flat only once.
 
@@ -39,7 +39,9 @@ We will use the model in [`docs/data-model.dbml`](../data-model.dbml). Its main 
 
 **Moderation.** Moderators hide reviews that use insulting language, reveal personal data or are shown to be false. Hiding sets `hidden_at` and `hidden_by` and can be undone. Users report a review through the `report` table, and resolving a report is separate from hiding the review.
 
-**Deleting accounts and flats.** When a student deletes their account, their reviews stay and are shown as written by "Deleted User", because they are still useful to the next tenants. TODO: whether a landlord can delete a flat that has reviews.
+**Deleting accounts and flats.** When a student deletes their account, their reviews stay and are shown as written by "Deleted User", because they are still useful to the next tenants. A landlord cannot delete a flat that has reviews, because deleting it would be a way to get rid of bad ratings. Instead, a landlord can archive a flat, which sets `archived_at`. An archived flat no longer appears in the feed or in search, but the flat and its reviews are still shown on the landlord's profile. The reference from `review` to `flat` restricts deletion, so the database refuses to delete a reviewed flat even if the check in Python is skipped. A flat without reviews can still be deleted. Archived flats can be un-archived. Students can still write reviews if the flat is archived, so archiving can't be used to stop new reviews.
+
+An archived flat never has an open listing. Archiving a flat also archives its open listing, and un-archiving does not reopen it: the landlord creates a new listing instead, so last year's offer never comes back into search. Creating a listing on an archived flat is rejected. The database can't check a rule that spans two tables, so this rule lives in the core functions, and no other code may write listings directly.
 
 **Login codes.** Codes are stored hashed in `login_code`, with the email they were sent to and no link to `users`, because a code is also sent at sign-up, before the user exists. Rows are deleted after use or expiry. How sessions work is decided in ADR 004.
 
