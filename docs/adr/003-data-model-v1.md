@@ -30,10 +30,12 @@ We will use the model in [`docs/data-model.dbml`](../data-model.dbml). Its main 
 
 **Search filters and their units.** Pages, Bob's saved searches and the search all use the same filters, in the same units:
 
-- price: euros per month, TODO: utilities included or not
+- price: euros per month, rent only, unless the listing has `utilities_included` set
 - rooms: a whole number
 - distance: kilometres from one chosen faculty
 - neighbourhood: zero or more neighbourhoods from the `neighbourhood` table, by id. None selected means any neighbourhood.
+
+Utilities are not part of the price, because they differ from flat to flat and depend on how many people share it. Students agree them with the landlord directly. A landlord whose price already includes utilities ticks `utilities_included` on the listing. The flag is only displayed, not used as a filter, so a price with utilities included is compared like any other. It is stored from the first listing so that Sigi's estimate can leave those prices out or adjust them.
 
 A listing matches when it passes every filter that is set. Saved searches store their neighbourhoods in a join table, `saved_search_neighbourhood`, so every id is checked by a foreign key.
 
