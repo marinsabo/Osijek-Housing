@@ -55,7 +55,7 @@ Table listing{
   id integer [primary key]
   flat_id integer [not null]
   price numeric(8,2) [not null]
-  utillities_included bool [not null, default: false]
+  utilities_included bool [not null, default: false]
   published_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
   taken_at timestamptz
@@ -152,7 +152,7 @@ Ref: flat.landlord_id > landlord.user_id
 Ref: neighbourhood.id < flat.neighbourhood_id
 Ref: flat.id < listing.flat_id
 Ref: student.faculty_id > faculty.id
-Ref: review.student_id > student.user_id
+Ref: review.student_id > student.user_id [delete: set null]
 Ref: review.flat_id > flat.id [delete: restrict]
 Ref: review.verified_by > users.id
 Ref: review.id < report.review_id
