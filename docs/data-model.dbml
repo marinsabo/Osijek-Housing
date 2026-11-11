@@ -32,6 +32,7 @@ Table flat{
   parking_type varchar (20)
   neighbourhood_id integer [not null]
   location geography(Point, 4326) [not null]
+  archived_at timestamptz
 
   checks {
     `area_m2 > 0` [name: 'chk_area']
@@ -57,10 +58,12 @@ Table listing{
   published_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
   taken_at timestamptz
+  archived_at timestamptz
   description varchar(1000) [not null]
 
   checks {
     `price > 0` [name: 'chk_price']
+    `taken_at IS NULL OR archived_at IS NULL` [name: 'chk_taken_or_archived']
   }
 
   indexes {
@@ -149,7 +152,7 @@ Ref: neighbourhood.id < flat.neighbourhood_id
 Ref: flat.id < listing.flat_id
 Ref: student.faculty_id > faculty.id
 Ref: review.student_id > student.user_id
-Ref: review.flat_id > flat.id
+Ref: review.flat_id > flat.id [delete: restrict]
 Ref: review.verified_by > users.id
 Ref: review.id < report.review_id
 Ref: users.id < report.reporter_id
