@@ -55,6 +55,7 @@ Table listing{
   id integer [primary key]
   flat_id integer [not null]
   price numeric(8,2) [not null]
+  utillities_included bool [not null, default: false]
   published_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
   taken_at timestamptz
