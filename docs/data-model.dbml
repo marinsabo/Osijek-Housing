@@ -29,7 +29,7 @@ Table flat{
   house_number varchar(10) [not null]
   floor integer
   unit varchar (10)
-  parking_type varchar (20)
+  parking_type varchar (20) [not null]
   neighbourhood_id integer [not null]
   location geography(Point, 4326) [not null]
   archived_at timestamptz
@@ -149,14 +149,14 @@ Ref: student.user_id - users.id
 Ref: landlord.user_id - users.id
 Ref: landlord.verified_by > users.id
 Ref: flat.landlord_id > landlord.user_id
-Ref: neighbourhood.id < flat.neighbourhood_id
-Ref: flat.id < listing.flat_id
+Ref: flat.neighbourhood_id > neighbourhood.id
+Ref: listing.flat_id > flat.id
 Ref: student.faculty_id > faculty.id
 Ref: review.student_id > student.user_id [delete: set null]
 Ref: review.flat_id > flat.id [delete: restrict]
 Ref: review.verified_by > users.id
-Ref: review.id < report.review_id
-Ref: users.id < report.reporter_id
+Ref: report.review_id > review.id
+Ref: report.reported_id > users.id
 Ref: report.resolved_by > users.id
 Ref: listing_photo.listing_id > listing.id
 Ref: review.hidden_by > users.id
