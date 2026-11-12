@@ -156,7 +156,7 @@ Ref: review.student_id > student.user_id [delete: set null]
 Ref: review.flat_id > flat.id [delete: restrict]
 Ref: review.verified_by > users.id
 Ref: report.review_id > review.id
-Ref: report.reported_id > users.id
+Ref: report.reporter_id > users.id
 Ref: report.resolved_by > users.id
 Ref: listing_photo.listing_id > listing.id
 Ref: review.hidden_by > users.id
