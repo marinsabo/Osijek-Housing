@@ -10,6 +10,8 @@ RUN pip install fastapi uvicorn
 RUN pip install sqlalchemy
 # Install Alembic and the Postgres driver (psycopg)
 RUN pip install alembic "psycopg[binary]" python-dotenv
+# Install GeoAlchemy2 (needed for location in database)
+RUN pip install GeoAlchemy2
 
 # Copy app directory into image
 COPY app /osijek-housing/app

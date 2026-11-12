@@ -1,4 +1,5 @@
 from logging.config import fileConfig
+from geoalchemy2 import alembic_helpers
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -20,7 +21,7 @@ user = os.environ["POSTGRES_ADMIN_USER"]
 password = os.environ["POSTGRES_ADMIN_PASS"]
 host = os.environ.get("POSTGRES_HOST", "localhost")
 config.set_main_option(
-    "sqlalchemy.url", f"postgresql+psycopg://{user}:{password}@{host}:5432/{user}"
+    "sqlalchemy.url", f"postgresql+psycopg://{user}:{password}@{host}:5432/{user}?options=-csearch_path=public"
 )
 
 
@@ -40,13 +41,6 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-def include_object(object, name, type_, reflected, compare_to):
-    # Ignore tables that exist in the database but not in our models
-    # (PostGIS creates its own tables, and we must never drop them).
-    if type_ == "table" and reflected and compare_to is None:
-        return False
-    return True
-
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -63,7 +57,9 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
-        include_object=include_object,
+        include_object=alembic_helpers.include_object,
+        process_revision_directives=alembic_helpers.writer,
+        render_item=alembic_helpers.render_item,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -89,7 +85,9 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            include_object=include_object,
+            include_object=alembic_helpers.include_object,
+            process_revision_directives=alembic_helpers.writer,
+            render_item=alembic_helpers.render_item,
         )
 
         with context.begin_transaction():
