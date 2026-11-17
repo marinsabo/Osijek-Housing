@@ -17,7 +17,7 @@ RUN pip install alembic "psycopg[binary]" python-dotenv
 RUN pip install GeoAlchemy2
 
 # Install Jinja2
-RUN pip install jinj2
+RUN pip install jinja2
 
 # Copy app directory into image
 COPY app /osijek-housing/app
