@@ -61,7 +61,7 @@ This builds the app and starts it together with the database. The first run down
 
 ### 4. Open it in your browser
 
-Go to <http://localhost:8000>. You should see:
+Go to <http://localhost:8000/health>. You should see:
 
 ```json
 { "status": "ok" }
