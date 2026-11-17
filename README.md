@@ -49,6 +49,8 @@ Don't use spaces or quotes. `.env` is in `.gitignore`, so it is never committed.
 
 ### 3. Start the app
 
+On start, the app creates or updates database tables automatically.
+
 Make sure Docker Desktop is running (on Linux, the Docker service), then run:
 
 ```bash
