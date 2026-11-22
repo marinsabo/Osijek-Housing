@@ -7,21 +7,14 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.core.models import Base
+from app.core.database import db_url
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-import os
-from dotenv import load_dotenv
-
-# Read the database login from .env, so the password is never in Git
-load_dotenv()
-user = os.environ["POSTGRES_ADMIN_USER"]
-password = os.environ["POSTGRES_ADMIN_PASS"]
-host = os.environ.get("POSTGRES_HOST", "localhost")
 config.set_main_option(
-    "sqlalchemy.url", f"postgresql+psycopg://{user}:{password}@{host}:5432/{user}?options=-csearch_path=public"
+    "sqlalchemy.url", db_url.render_as_string(hide_password=False).replace("%", "%%")
 )
 
 

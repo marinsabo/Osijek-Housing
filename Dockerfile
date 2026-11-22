@@ -19,12 +19,24 @@ RUN pip install GeoAlchemy2
 # Install Jinja2 (HTML templates) and python-multipart (reading HTML forms)
 RUN pip install jinja2 python-multipart
 
+# Install Jinja2
+RUN pip install jinja2
+
 # Copy app directory into image
 COPY app /osijek-housing/app
 
+<<<<<<< HEAD
 # Copy Alembic config and migrations
+=======
+# Copy Alembic and run migrations before starting the app
+COPY app /osijek-housing/app
+>>>>>>> 383a3cf2f9ccc97825d13b2938fbb918a120c362
 COPY alembic /osijek-housing/alembic
 COPY alembic.ini /osijek-housing/
 
 # Start the fastAPI server and run migrations
+<<<<<<< HEAD
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0"]
+=======
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0"]
+>>>>>>> 383a3cf2f9ccc97825d13b2938fbb918a120c362
