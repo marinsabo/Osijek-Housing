@@ -1,4 +1,4 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, DateTime, false, func, MetaData, ForeignKey, Numeric, CheckConstraint, UniqueConstraint
 from datetime import datetime
 from geoalchemy2 import Geography, WKBElement
@@ -90,6 +90,8 @@ class Listing(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     flat_id: Mapped[int] = mapped_column(ForeignKey("flat.id"),index=True)
+    # The Flat whose id is flat_id, so you can read flat data from a listing, e.g. listing.flat.number_of_rooms
+    flat: Mapped["Flat"] = relationship()
     price: Mapped[Decimal] = mapped_column(Numeric(8,2))
     utilities_included: Mapped[bool] = mapped_column(server_default=false())
     published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
