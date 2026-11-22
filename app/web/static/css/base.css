@@ -1,0 +1,23 @@
+h1{
+    text-align: center;
+}
+nav{
+    text-align: center;
+}
+a{
+    text-decoration: none;
+    padding: 5px 25px 5px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+a:hover{
+    text-decoration: underline;
+}
+div{
+    text-align: center;
+    padding: 10px;
+}

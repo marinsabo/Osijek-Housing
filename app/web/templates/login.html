@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <title>LoginPage</title>
+    <h1>Napravi račun!</h1>
+</head>
+<body>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/login">Login</a>
+        <a href="/about">About</a>
+    </nav>
+<br>
+<br>
+    <form>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="primjer@email.com" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="lozinka" required>
+        </div>
+        <div>
+            <button id="submitButton" type="submit">Submit</button>
+        </div>
+    </form>
+    <script src="/static/js/login.js"></script>
+</body>
+</html>
