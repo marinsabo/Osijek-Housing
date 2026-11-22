@@ -12,6 +12,8 @@ RUN pip install sqlalchemy
 RUN pip install alembic "psycopg[binary]" python-dotenv
 # Install GeoAlchemy2 (needed for location in database)
 RUN pip install GeoAlchemy2
+# Install Jinja2 (HTML templates) and python-multipart (reading HTML forms)
+RUN pip install jinja2 python-multipart
 
 # Copy app directory into image
 COPY app /osijek-housing/app
