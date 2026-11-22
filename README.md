@@ -49,6 +49,8 @@ Don't use spaces or quotes. `.env` is in `.gitignore`, so it is never committed.
 
 ### 3. Start the app
 
+On start, the app creates or updates database tables automatically.
+
 Make sure Docker Desktop is running (on Linux, the Docker service), then run:
 
 ```bash
@@ -59,7 +61,7 @@ This builds the app and starts it together with the database. The first run down
 
 ### 4. Open it in your browser
 
-Go to <http://localhost:8000>. You should see:
+Go to <http://localhost:8000/health>. You should see:
 
 ```json
 { "status": "ok" }

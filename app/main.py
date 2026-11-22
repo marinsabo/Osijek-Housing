@@ -12,8 +12,16 @@ print(TEMPLATES_DIR, TEMPLATES_DIR.exists(), flush=True)
 print(STATIC_DIR, STATIC_DIR.exists(), flush=True)
 
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+from fastapi import FastAPI, Depends
+from app.web.routes import router
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from app.core.database import get_session
 
 app = FastAPI()
+app.include_router(router)
+app.mount("/static", StaticFiles(directory=Path(__file__).parent / "web" / "static"), name="static")
 
 app.mount("/static",StaticFiles(directory=STATIC_DIR),name="static")
 
@@ -32,3 +40,10 @@ def login(request: Request):
 @app.get("/about", response_class=HTMLResponse)
 def about(request: Request):
     return templates.TemplateResponse(request, "about.html")
+@app.get("/health")
+def root():
+    return {"status": "ok"}
+
+@app.get("/health/db")
+def check(session = Depends(get_session)):
+    return {"db": session.execute(text("SELECT 1")).scalar()}
