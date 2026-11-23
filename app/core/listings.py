@@ -1,5 +1,5 @@
 from app.core.errors import InvalidInput
-from app.core.models import Landlord, Neighbourhood, Flat
+from app.core.models import Landlord, Neighbourhood, Flat, Listing
 
 def create_flat(session, landlord_id, area_m2, number_of_rooms, street, house_number,
                 parking_type, neighbourhood_id, longitude, latitude, floor = None, unit = None):
@@ -76,4 +76,51 @@ def create_flat(session, landlord_id, area_m2, number_of_rooms, street, house_nu
 
     # Return the saved flat, so the caller can use its id, e.g. to create a listing for it.
     return flat
+    
+def create_listing(session, flat_id, price, description, utilities_included):
+    """Validate a new listing and save it to the database.
+
+    Args:
+        session: An open database session. The caller opens and closes it.
+        flat_id: id of an existing flat.
+        price: price of the listing in euros, greater than 0.
+        description: description of the listing, cannot be empty.
+        utilities_included: indicates if utilities are included in the price, True or False (bool).
+
+    Returns:
+        The saved Listing, with its id, published_at and updated_at filled in.
+
+    Raises:
+        InvalidInput: If a value is missing or invalid. Its field is the
+            name of the wrong argument, its message can be shown to the user.
+    """
+
+    flat = session.get(Flat, flat_id)
+
+    if flat is None:
+        raise InvalidInput("flat_id", "Flat is not specified or does not exist in database.")
+    # Checks if the flat for which listing is being made is archived. In order to be published,
+    # flat mustn't be archived.
+    if flat.archived_at is not None:
+        raise InvalidInput("flat_id", "Flat cannot be archived in order to publish listing.")
+    if price is None:
+        raise InvalidInput("price", "Price is not specified.")
+    if price <= 0:
+        raise InvalidInput("price", "Price must be greater than 0.")
+    if not description or len(description.strip()) == 0:
+        raise InvalidInput("description", "Description is not specified.")
+    if len(description) > 1000:
+        raise InvalidInput("description", "Description can be maximum of 1000 characters long.")
+    if not isinstance(utilities_included, bool):
+        raise InvalidInput("utilities_included", "Utilities are not specified or the value is wrong.")
+
+    listing = Listing(flat_id = flat_id, price = price, description = description,
+                        utilities_included = utilities_included)
+    
+    session.add(listing)
+    session.commit()
+    session.refresh(listing)
+
+    return listing
+
     
