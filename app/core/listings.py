@@ -1,5 +1,7 @@
 from app.core.errors import InvalidInput
 from app.core.models import Landlord, Neighbourhood, Flat, Listing
+from sqlalchemy.orm import joinedload, contains_eager
+from sqlalchemy import select
 
 def create_flat(session, landlord_id, area_m2, number_of_rooms, street, house_number,
                 parking_type, neighbourhood_id, longitude, latitude, floor = None, unit = None):
@@ -123,4 +125,65 @@ def create_listing(session, flat_id, price, description, utilities_included):
 
     return listing
 
-    
+def get_listing(session, listing_id):
+    """Return the listing if it exists in database. Returns None if it doesn't.
+
+    Args:
+        session: An open database session. The caller opens and closes it.
+        listing_id: id of a listing that is requested.
+
+    Returns:
+        Listing object with its flat loaded, or None if there is no listing with that id.
+    """
+    # Loads both listing and its matching flat (flat: Mapped["Flat"] = relationship() field).
+    listing = session.get(Listing, listing_id, options=[joinedload(Listing.flat)])
+
+    return listing
+
+def list_listings(session, min_price=None, max_price=None, rooms=None):
+    """Return open listings that match the filters, newest first.
+
+    A listing is open if it is not taken, not archived and its flat is not archived.
+    A filter left as None is not applied.
+
+    Args:
+        session: An open database session. The caller opens and closes it.
+        min_price: Lowest price in euros, inclusive, 0 or more.
+        max_price: Highest price in euros, inclusive, 0 or more, not lower than min_price.
+        rooms: Exact number of rooms of the flat, greater than 0.
+
+    Returns:
+        List of Listing objects with their flat loaded. Empty list if nothing matches.
+
+    Raises:
+        InvalidInput: If a filter is invalid. Its field is the
+            name of the wrong argument, its message can be shown to the user.
+    """
+    if min_price is not None and min_price < 0:
+        raise InvalidInput("min_price", "Minimum price cannot be negative.")
+    if max_price is not None and max_price < 0:
+        raise InvalidInput("max_price", "Maximum price cannot be negative.")
+    if min_price is not None and max_price is not None and min_price > max_price:
+        raise InvalidInput("max_price", "Maximum price cannot be lower than minimum price.")
+    if rooms is not None and rooms <= 0:
+        raise InvalidInput("rooms", "Number of rooms must be greater than 0.")
+
+    # A listing row only stores flat_id. Number of rooms and the flat's archived_at live in the flat table.
+    # join glues each listing row to its own flat row (listing.flat_id = flat.id, known from the
+    # relationship in models.py), so where() can filter on Flat columns too. Without it, Postgres would
+    # pair every listing with every flat and return wrong rows.
+    # contains_eager fills listing.flat from that same join, so the caller can read listing.flat
+    # without another query. joinedload would add a second, separate join of the flat table.
+    query = (select(Listing).join(Listing.flat).options(contains_eager(Listing.flat))
+             .where(Listing.taken_at==None, Listing.archived_at==None, Flat.archived_at==None))
+    if min_price is not None:
+        query = query.where(min_price <= Listing.price)
+    if max_price is not None:
+        query = query.where(max_price >= Listing.price)
+    if rooms is not None:
+        query = query.where(Flat.number_of_rooms == rooms)
+
+    query = query.order_by(Listing.published_at.desc())
+    listings = session.scalars(query).all()
+
+    return listings
