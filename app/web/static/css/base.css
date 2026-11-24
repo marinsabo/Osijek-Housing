@@ -1,23 +1,48 @@
-h1{
+body {
+    margin: 0;
+}
+
+header {
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid #b9e4f2;
     text-align: center;
 }
-nav{
-    text-align: center;
+
+nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
-a{
-    text-decoration: none;
-    padding: 5px 25px 5px;
+
+a {
+    padding: 5px 25px;
     border: 2px solid black;
     border-radius: 10px;
-}
-a:visited{
     text-decoration: none;
+}
+
+a:visited {
     color: black;
 }
-a:hover{
-    text-decoration: underline;
+
+a:hover {
+    text-decoration: none;
+    background-color: #b9e4f2;
 }
-div{
+
+h1,
+p {
     text-align: center;
-    padding: 10px;
+}
+
+main {
+    width: min(calc(100% - 2rem), 70rem);
+    margin: 2rem auto;
+    text-align: center;
+}
+
+footer {
+    padding: 1rem;
+    text-align: center;
 }
