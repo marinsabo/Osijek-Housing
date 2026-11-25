@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="hr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <title>HomePage</title>
-    <h1>OsijekHousing</h1>
-</head>
-<body>
-    <nav>
-        <a href="/home">Home</a>
-        <a href="/login">Login</a>
-        <a href="/about">About</a>
-    </nav>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+    <h1>Welcome to the home page!</h1>
+    <h2><bold>Be patient!</bold></h2>
+    <p>
+        Future listings will be shown here along with the locations
+        and other functionalities.
+    </p>
+{% endblock %}

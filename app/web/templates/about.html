@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="hr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/about.css">
-    <title>AboutPage</title>
-    <h1>OsijekHousing</h1>
-</head>
-<body>
-    <nav>
-        <a href="/home">Home</a>
-        <a href="/login">Login</a>
-        <a href="/about">About</a>
-    </nav>
+{% extends "base.html" %}
+{% block title %}About Osijek Housing{% endblock %}
+{% block content %}
+    <h1>About the project</h1>
     <p>
-        Ovo je About stranica gdje će biti linkovi za grinder račun svakog admina.
+        Osijek Housing has one main goal and that is to help
+        students find a suitable commodation during their stay
+        in Osijek.
     </p>
-</body>
-</html>
+{% endblock %}
