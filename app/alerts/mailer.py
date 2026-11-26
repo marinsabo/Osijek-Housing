@@ -3,8 +3,8 @@ import smtplib
 from email.message import EmailMessage
 
 def send_email(to_email, subject, body):
-    host = os.getenv("SMTP_HOST", "smtp-relay.brevo.com")
-    port = int(os.getenv("SMTP_PORT", 587))
+    host = os.getenv("SMTP_HOST")
+    port = int(os.getenv("SMTP_PORT"))
     user = os.getenv("SMTP_USER")
     password = os.getenv("SMTP_PASS")
     sender = os.getenv("SMTP_FROM", "OsijekHousing <noreply@osijekhousing.local>")
