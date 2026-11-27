@@ -2,6 +2,7 @@ from app.core.listings import create_flat, create_listing, get_listing, list_lis
 from app.core.errors import InvalidInput
 from sqlalchemy import func
 import pytest
+from datetime import datetime, timezone
 
 def make_listing(session, landlord, neighbourhood, number_of_rooms, price):
     flat = create_flat(session=session, landlord_id=landlord.user_id, area_m2=56.00,
@@ -145,3 +146,55 @@ def test_list_listings_equal_min_and_max_price_return_exact_listing(session, lan
     listings = list_listings(session=session, min_price=200, max_price=200)
 
     assert len(listings) == 1 and listing_200 in listings
+
+def test_list_listings_rooms_matches_exactly(session, landlord, neighbourhood):
+    listing_1_room = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=1, price=100)
+    listing_2_room = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=2, price=200)
+    listing_3_room = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=3, price=300)
+
+    listings = list_listings(session=session, rooms=2)
+
+    assert len(listings) == 1 and listing_2_room in listings
+
+def test_list_listings_returns_newest_first(session, landlord, neighbourhood):
+    listing_middle = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=2, price=200)
+    listing_middle.published_at = datetime(2026, 10, 27, tzinfo=timezone.utc)
+    session.commit()
+
+    listing_old = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=1, price=100)
+    listing_old.published_at = datetime(2026, 5, 27, tzinfo=timezone.utc)
+    session.commit()
+
+    listing_new = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=3, price=300)
+    listing_new.published_at = datetime(2026, 11, 27, tzinfo=timezone.utc)
+    session.commit()
+
+    listings = [listing_new, listing_middle, listing_old]
+    expected_listings = list_listings(session=session)
+
+    assert expected_listings == listings
+
+def test_list_listings_rejects_negative_min_price(session):
+    with pytest.raises(InvalidInput) as error_info:
+        list_listings(session=session, min_price=-200)
+
+    assert error_info.value.field == "min_price" 
+
+def test_list_listings_rejects_min_price_above_max_price(session):
+    with pytest.raises(InvalidInput) as error_info:
+        list_listings(session=session, min_price=500, max_price=100)
+
+    assert error_info.value.field == "max_price" 
+
+def test_list_listings_rejects_zero_rooms(session):
+    with pytest.raises(InvalidInput) as error_info:
+        list_listings(session=session, rooms=0)
+
+    assert error_info.value.field == "rooms" 
+
