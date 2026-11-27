@@ -49,7 +49,7 @@ A flat's neighbourhood is chosen by the landlord from the `neighbourhood` list, 
 
 An archived flat never has an open listing. Archiving a flat also archives its open listing, and un-archiving does not reopen it: the landlord creates a new listing instead, so last year's offer never comes back into search. Creating a listing on an archived flat is rejected. The database can't check a rule that spans two tables, so this rule lives in the core functions, and no other code may write listings directly.
 
-**Login codes.** Codes are stored hashed in `login_code`, with the email they were sent to and no link to `users`, because a code is also sent at sign-up, before the user exists. Rows are deleted after use or expiry. How sessions work is decided in ADR 004.
+**Login codes.** Codes are stored hashed in `login_code`, with the email they were sent to and no link to `users`, because a code is also sent at sign-up, before the user exists. Rows are deleted after use or expiry. How sessions work is decided in ADR 005.
 
 **Photos.** Each listing photo is one row in `listing_photo`, ordered by `position`. The image file itself is stored outside the database. Where it is stored and how large it may be is decided before 6 December.
 
