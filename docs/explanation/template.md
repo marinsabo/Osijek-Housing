@@ -40,5 +40,3 @@ related, not just that they are.
 <!--
 Optional. What tripped someone up, and the answer.
 -->
-
-_Last checked against the code: DD-MM-YYYY_

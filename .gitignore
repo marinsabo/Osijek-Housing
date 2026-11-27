@@ -3,3 +3,5 @@
 __pycache__
 branding/
 *.local.py
+*.egg-info
+.vscode/
