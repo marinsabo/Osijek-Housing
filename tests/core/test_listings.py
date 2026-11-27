@@ -109,3 +109,39 @@ def test_list_listings_returns_only_open_listings(session, landlord, neighbourho
     listings = list_listings(session)
 
     assert len(listings) == 1 and open_listing in listings
+
+def test_list_listings_min_price_includes_its_value(session, landlord, neighbourhood):
+    listing_100 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=1, price=100)
+    listing_200 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=2, price=200)
+    listing_300 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=3, price=300)
+
+    listings = list_listings(session=session, min_price=200)
+
+    assert len(listings) == 2 and listing_200 in listings and listing_300 in listings
+
+def test_list_listings_max_price_includes_its_value(session, landlord, neighbourhood):
+    listing_100 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=1, price=100)
+    listing_200 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=2, price=200)
+    listing_300 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=3, price=300)
+
+    listings = list_listings(session=session, max_price=200)
+
+    assert len(listings) == 2 and listing_100 in listings and listing_200 in listings
+
+def test_list_listings_equal_min_and_max_price_return_exact_listing(session, landlord, neighbourhood):
+    listing_100 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=1, price=100)
+    listing_200 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=2, price=200)
+    listing_300 = make_listing(session=session, landlord=landlord, neighbourhood=neighbourhood,
+                            number_of_rooms=3, price=300)
+
+    listings = list_listings(session=session, min_price=200, max_price=200)
+
+    assert len(listings) == 1 and listing_200 in listings
