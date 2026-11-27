@@ -7,13 +7,14 @@ load_dotenv()
 db_user = os.environ["POSTGRES_ADMIN_USER"]
 db_pass = os.environ["POSTGRES_ADMIN_PASS"]
 db_host = os.getenv("POSTGRES_HOST", "localhost")
+db_name = os.getenv("POSTGRES_DB") or db_user
 
 db_url = URL.create(
     "postgresql+psycopg",
     username=db_user,
     password=db_pass,
     host=db_host,
-    database=db_user,
+    database=db_name,
     # Limit search_path to public, so the tiger and topology tables from the PostGIS image stay hidden.
     # Otherwise autogenerate would drop them.
     query={"options": "-csearch_path=public"},
