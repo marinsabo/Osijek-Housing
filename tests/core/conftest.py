@@ -1,5 +1,5 @@
 from app.core.models import Neighbourhood, User, Landlord
-from app.core.listings import create_flat
+from app.core.listings import create_flat, create_listing
 import pytest
 
 @pytest.fixture()
@@ -33,3 +33,10 @@ def flat(session, landlord, neighbourhood):
                           longitude=18.6939, latitude=45.5511)
 
     return new_flat
+
+@pytest.fixture()
+def listing(session, flat):
+    new_listing = create_listing(session=session, flat_id=flat.id, price=200.00,
+                                 description="This is test description", utilities_included=False)
+
+    return new_listing

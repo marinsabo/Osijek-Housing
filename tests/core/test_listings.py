@@ -1,4 +1,4 @@
-from app.core.listings import create_flat, create_listing
+from app.core.listings import create_flat, create_listing, get_listing
 from app.core.errors import InvalidInput
 from sqlalchemy import func
 import pytest
@@ -11,7 +11,7 @@ def test_create_flat_saves_valid_flat(session, landlord, neighbourhood):
     
     assert flat.id is not None
 
-def test_creating_flat_rejects_zero_area(session, landlord, neighbourhood):
+def test_create_flat_rejects_zero_area(session, landlord, neighbourhood):
     # The code in this block must raise InvalidInput. Catch it and store it in error_info.
     with pytest.raises(InvalidInput) as error_info:
         create_flat(session=session, landlord_id=landlord.user_id, area_m2=0.00,
@@ -26,21 +26,21 @@ def test_create_listing_saves_valid_listing(session, flat):
 
     assert listing.id is not None
 
-def test_creating_listing_rejects_zero_price(session, flat):
+def test_create_listing_rejects_zero_price(session, flat):
     with pytest.raises(InvalidInput) as error_info:
         create_listing(session=session, flat_id=flat.id, price=0.00,
                             description="This is test description", utilities_included=False)
 
     assert error_info.value.field == "price"
 
-def test_creating_listing_rejects_empty_description(session, flat):
+def test_create_listing_rejects_empty_description(session, flat):
     with pytest.raises(InvalidInput) as error_info:
         create_listing(session=session, flat_id=flat.id, price=200.00,
                             description="", utilities_included=False)
 
     assert error_info.value.field == "description"
 
-def test_creating_listing_rejects_nonexistent_flat(session):
+def test_create_listing_rejects_missing_flat(session):
     with pytest.raises(InvalidInput) as error_info:
         # Pass made-up flat_id (flat which doesn't exist)
         create_listing(session=session, flat_id=99999, price=200.00,
@@ -48,7 +48,7 @@ def test_creating_listing_rejects_nonexistent_flat(session):
 
     assert error_info.value.field == "flat_id"
 
-def test_creating_listing_rejects_archived_flat(session, flat):
+def test_create_listing_rejects_archived_flat(session, flat):
     flat.archived_at = func.now()
     session.commit()
 
@@ -58,9 +58,25 @@ def test_creating_listing_rejects_archived_flat(session, flat):
 
     assert error_info.value.field == "flat_id"
 
-def test_creating_listing_rejects_not_bool_utilities_included(session, flat):
+def test_create_listing_rejects_non_bool_utilities(session, flat):
     with pytest.raises(InvalidInput) as error_info:
         create_listing(session=session, flat_id=flat.id, price=200.00,
                             description="This is test description", utilities_included="Yes")
 
     assert error_info.value.field == "utilities_included"
+
+def test_get_listing_finds_listing_by_id(session, listing):
+    found_listing = get_listing(session=session, listing_id=listing.id)
+
+    assert found_listing.id == listing.id
+
+def test_get_listing_loads_flat(session, listing, flat):
+    found_listing = get_listing(session=session, listing_id=listing.id)
+
+    assert found_listing.flat.id == flat.id
+
+def test_get_listing_returns_none_for_missing_id(session, listing):
+    # Pass made-up listing_id (listing which doesn't exist)
+    found_listing = get_listing(session=session, listing_id=9999)
+
+    assert found_listing is None
